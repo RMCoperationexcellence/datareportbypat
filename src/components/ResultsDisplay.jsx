@@ -46,6 +46,8 @@ export default function ResultsDisplay({ dataResults, latestAssessmentDate, }) {
 
   const groupedData = groupByPlantNo(dataResults);
 
+  console.log("groupdata",groupedData)
+
   return (
     <div>
       {Object.keys(groupedData).map((plantNo, index) => {

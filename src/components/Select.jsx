@@ -1,4 +1,3 @@
-//select.jsx
 import { useState, useEffect } from "react";
 import { fetchSearchData } from "../api";
 import {
@@ -11,6 +10,10 @@ import {
   Select,
   Divider,
 } from "@mui/material";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from 'dayjs';
+// import 'dayjs/locale/th'; // หากต้องการใช้งาน locale ภาษาไทย
 
 export default function SelectLocation({ onSearch }) {
   const [division, setDivision] = useState("all");
@@ -19,6 +22,10 @@ export default function SelectLocation({ onSearch }) {
   const [searchdata, setSearchdata] = useState([]);
   const [searchdata1, setSearchdata1] = useState([]);
   const [searchdata2, setSearchdata2] = useState([]);
+  const defaultStartDate = dayjs().subtract(1, 'month').startOf('month');
+  const [startDate, setStartDate] = useState(defaultStartDate);
+  const [endDate, setEndDate] = useState(null);
+  
 
   const handleChange = async (event) => {
     const selectedDivision = event.target.value;
@@ -54,11 +61,27 @@ export default function SelectLocation({ onSearch }) {
       division: division,
       department: department,
       sector: sector,
+      startDate: startDate ? startDate.format("YYYY-MM-DD") : null,
+      endDate: endDate ? endDate.endOf("month").format("YYYY-MM-DD") : null,
     };
     if (onSearch) {
       onSearch(searchData);
     }
   };
+
+  const handleDateChange = (newDate) => {
+    if (newDate) {
+      const start = newDate.startOf("month");
+      const end = newDate.endOf("month");
+      setStartDate(start);
+      setEndDate(end);
+    } else {
+      setStartDate(null);
+      setEndDate(null);
+    }
+  };
+  console.log('s',startDate);
+  console.log('e',endDate);
 
   useEffect(() => {
     const initializeData = async () => {
@@ -133,6 +156,20 @@ export default function SelectLocation({ onSearch }) {
                 ))}
               </Select>
             </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+          <FormControl fullWidth>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label={"เลือกเดือนและปี"}
+                views={["month", "year"]}
+                value={startDate}
+                onChange={handleDateChange}
+                allowKeyboardControl={false}
+                disableFuture 
+              />
+            </LocalizationProvider>
+          </FormControl>
           </Grid>
           <Grid
             item
